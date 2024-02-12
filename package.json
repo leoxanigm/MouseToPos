@@ -1,7 +1,7 @@
 {
-  "name": "@hodgef/js-library-boilerplate-basic",
-  "version": "1.6.267",
-  "description": "Javascript Minimal Starter Kit for building libraries",
+  "name": "mouse-to-pos",
+  "version": "0.0.1",
+  "description": "Small utility to get the mouse position relative to an element",
   "main": "build/index.js",
   "scripts": {
     "start": "webpack serve --config webpack.config.demo.js",
@@ -13,18 +13,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/hodgef/js-library-boilerplate-basic"
+    "url": "git remote add origin https://github.com/leoxanigm/MouseToPos.git"
   },
-  "author": "Francisco Hodge <hello@franciscohodge.com> (https://github.com/hodgef)",
+  "author": "Zola (https://zola.dev)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hodgef/js-library-boilerplate-basic/issues"
+    "url": "git remote add origin https://github.com/leoxanigm/MouseToPos/issues"
   },
-  "homepage": "https://github.com/hodgef/js-library-boilerplate-basic",
+  "homepage": "git remote add origin https://github.com/leoxanigm/MouseToPos",
   "keywords": [
-    "library",
-    "starter",
-    "es6"
+    "mouse position to element"
   ],
   "devDependencies": {
     "@babel/cli": "^7.23.4",
@@ -44,6 +42,8 @@
     "mini-css-extract-plugin": "^2.8.0",
     "style-loader": "^3.3.4",
     "terser-webpack-plugin": "^5.3.10",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
     "url-loader": "^4.1.1",
     "webpack": "^5.90.1",
     "webpack-cli": "^5.1.3",

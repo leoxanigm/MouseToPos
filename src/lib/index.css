@@ -1,19 +1,56 @@
-html,
-body {
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+}
+
+html,
+body {
   height: 100%;
 }
 
 body {
-  background: url("image.png") no-repeat 98% 2%;
-  padding: 20px;
-  height: 100%;
-  box-sizing: border-box;
-}
+  background: #f5f5f5;
 
-h1 {
-  margin: 0;
-  font-weight: 300;
+  & .col-container {
+    display: flex;
+    justify-content: space-evenly;
+
+    & .col {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      border-bottom: 1px solid gray;
+
+      &:before {
+        content: '';
+        display: block;
+        width: 1px;
+        height: 100vh;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-color: gray;
+      }
+    }
+  }
+
+  & .row-container {
+    & .row {
+      text-align: center;
+      border-bottom: 1px solid gray;
+      display: flex;
+      justify-content: space-evenly;
+
+      & * {
+        flex: 1;
+        padding: 10px 0
+      }
+
+      & .row-label {
+        /* Set it to 1/6th width of parent */
+        flex: calc(1 / 6);
+      }
+    }
+  }
 }

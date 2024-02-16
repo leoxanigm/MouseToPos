@@ -1,39 +1,48 @@
 import './index.css';
-import { getNodes, getFromLocalStorage, saveToLocalStorage } from './utils';
+import {
+  getNodes,
+  getFromLocalStorage,
+  saveToLocalStorage,
+  hash,
+  unHash
+} from './utils';
+import PosEvent from './events';
+import { eventMap, events, offsets, outputFunction, subdivision } from './@types';
 
-class MouseToPos {
-  #targetEls: NodeList;
-  #events: string[];
-  #divisionWidth: number;
-  #divisionHeight: number;
+class MouseToPos extends PosEvent {
+  #container: HTMLElement;
+  #events: events;
   #rows: number;
   #cols: number;
-  #container: HTMLElement;
-  #eventMap: { hover: string; click: string } = {
+  #offsetTop: number;
+  #offsetLeft: number;
+  #offsetBottom: number;
+  #offsetRight: number;
+  #eventMap: eventMap = {
     hover: 'mousemove',
     click: 'mousedown'
   };
-  #hoverDivs: Map<Array<number>, HTMLElement> = new Map();
+  #posEvent: PosEvent;
+  #outputFunction: outputFunction;
 
   constructor(options: {
-    targetEls: NodeList;
-    events: string[];
-    divisionWidth?: number;
-    divisionHeight?: number;
-    subdivision?: { rows: number; cols: number };
-    container?: HTMLElement;
+    container: HTMLElement;
+    events: events;
+    outputFunction: outputFunction;
+    subdivision?: subdivision;
+    offsets?: offsets
   }) {
-    this.#targetEls = options.targetEls;
+    super();
+    this.#container = options.container;
     this.#events = options.events;
-    this.#divisionWidth =
-      options.divisionWidth ||
-      (this.#targetEls[0] as HTMLElement).getBoundingClientRect().width;
-    this.#divisionHeight =
-      options.divisionHeight ||
-      (this.#targetEls[0] as HTMLElement).getBoundingClientRect().height;
+    this.#outputFunction = options.outputFunction;
     this.#rows = options.subdivision?.rows || 1;
-    this.#cols = options.subdivision?.rows || 1;
-    this.#container = options.container || document.body;
+    this.#cols = options.subdivision?.cols || 1;
+    this.#offsetTop = options.offsets?.top || 0;
+    this.#offsetLeft = options.offsets?.left || 0;
+    this.#offsetBottom = options.offsets?.bottom || 0;
+    this.#offsetRight = options.offsets?.right || 0;
+    this.#posEvent = new PosEvent();
     this.#init();
   }
 
@@ -43,81 +52,63 @@ class MouseToPos {
         'You must provide an event list with at least one event.'
       );
     }
-    if (
-      typeof this.#targetEls === 'undefined' ||
-      !Array.isArray(this.#events)
-    ) {
-      throw new TypeError(
-        'You must provide an element list with at least one element.'
-      );
+    if (!(this.#container instanceof HTMLElement)) {
+      throw new TypeError('You must provide a container element.');
     }
 
     this.#events.forEach((event: 'hover' | 'click') => {
       const mouseEvent = this.#eventMap[event];
-      this.#targetEls.forEach((element: HTMLElement) => {
-        element.addEventListener(mouseEvent, (e: MouseEvent) => {
-          this[`${event}Handler`](e as MouseEvent, element);
-        });
+      this.#container.addEventListener(mouseEvent, (e: MouseEvent) => {
+        this.#eventHandler(e as MouseEvent, this.#container);
       });
-    });
-
-    this.#container.addEventListener('mousemove', e => {
-      const hoverDivs = getNodes('.hover-div');
-      for (let i = 0; i < hoverDivs.length; i++) {
-        const div = hoverDivs[i] as HTMLElement;
-        if (
-          e.y < div.getBoundingClientRect().top ||
-          e.y > div.getBoundingClientRect().bottom ||
-          e.x < div.getBoundingClientRect().left ||
-          e.x > div.getBoundingClientRect().right
-        ) {
-          div.remove();
-        }
-      }
     });
   }
 
-  hoverHandler = (e: MouseEvent, element: HTMLElement) => {
-    const { x, y, width, height } = this.getXY(e);
-    this.drawRect({ x, y, width, height }, element);
+  #eventHandler = (e: MouseEvent, element: HTMLElement) => {
+    e.stopPropagation();
+    const { x, y, width, height } = this.getXY(e, element);
+    this.fire(x, y);
   };
 
-  clickHandler = (e: MouseEvent) => {
-    console.log('click');
-  };
-
-  getXY = (e: MouseEvent) => {
+  getXY = (e: MouseEvent, element: HTMLElement) => {
     const { clientX, clientY } = e;
-    const { top, left } = (e.target as HTMLElement).getBoundingClientRect();
-    const x =
-      Math.floor((clientX - left) / (this.#divisionWidth / this.#cols)) *
-      (this.#divisionWidth / this.#cols);
-    const y =
-      Math.floor((clientY - top) / (this.#divisionHeight / this.#rows)) *
-      (this.#divisionHeight / this.#rows);
+    const { top, left, width, height } = element.getBoundingClientRect();
+
+    const divisionWidth = width / this.#cols;
+    const divisionHeight = height / this.#rows;
+
+    const x = Math.floor((clientX - left) / divisionWidth) * divisionWidth;
+    const y = Math.floor((clientY - top) / divisionHeight) * divisionHeight;
+
     return {
       x,
       y,
-      width: this.#divisionWidth / this.#cols,
-      height: this.#divisionHeight / this.#rows
+      width: divisionWidth,
+      height: divisionHeight
     };
   };
 
-  drawRect = (
-    XY: { x: number; y: number; width: number; height: number },
-    parent: HTMLElement
-  ) => {
-    if (parent.children.length >= this.#cols * this.#rows) {
-      return;
-    }
-    const hoverDiv = document.createElement('div');
-    hoverDiv.classList.add('hover-div');
-    hoverDiv.style.left = `${XY.x}px`;
-    hoverDiv.style.top = `${XY.y}px`;
-    hoverDiv.style.width = `${XY.width}px`;
-    hoverDiv.style.height = `${XY.height}px`;
-    parent.appendChild(hoverDiv);
-  };
+  // drawRect = (
+  //   {
+  //     x,
+  //     y,
+  //     width,
+  //     height
+  //   }: { x: number; y: number; width: number; height: number },
+  //   parent: HTMLElement
+  // ) => {
+  //   const hoverDiv = document.createElement('div');
+  //   hoverDiv.classList.add('hover-div');
+  //   hoverDiv.style.left = `${x}px`;
+  //   hoverDiv.style.top = `${y}px`;
+  //   hoverDiv.style.width = `${width}px`;
+  //   hoverDiv.style.height = `${height}px`;
+  //   parent.appendChild(hoverDiv);
+  // };
+
+  // posToData = ({ x, y }: { x: number; y: number }) => {
+  //   console.log(x, y);
+  // };
 }
 
 export default MouseToPos;

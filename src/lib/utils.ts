@@ -1,12 +1,12 @@
-const getNodes = (selector: string): NodeList => {
+export const getNodes = (selector: string): NodeList => {
   return document.querySelectorAll(selector);
 };
 
-const saveToLocalStorage = (key: string, value: string): undefined => {
+export const saveToLocalStorage = (key: string, value: string): undefined => {
   localStorage.setItem(key, value);
 };
 
-const getFromLocalStorage = (key: string): string | null => {
+export const getFromLocalStorage = (key: string): string | null => {
   try {
     return localStorage.getItem(key);
   } catch (e) {
@@ -14,4 +14,10 @@ const getFromLocalStorage = (key: string): string | null => {
   }
 };
 
-export { getNodes, saveToLocalStorage, getFromLocalStorage };
+export const hash = (input: number[]): string => {
+  return input.reduce((acc, curr) => acc + curr.toString(), '');
+};
+
+export const unHash = (input: string): number[] => {
+  return input.split('').map((char: string) => parseInt(char));
+};

@@ -1,11 +1,4 @@
 import './index.css';
-import {
-  getNodes,
-  getFromLocalStorage,
-  saveToLocalStorage,
-  hash,
-  unHash
-} from './utils';
 import { event, eventMap, events, outputFunction, subdivision } from './@types';
 
 class MouseToPos {

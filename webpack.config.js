@@ -27,9 +27,9 @@ const banner = `
 module.exports = {
   mode: "production",
   devtool: 'source-map',
-  entry: './src/lib/index.js',
+  entry: './src/lib/index.ts',
   output: {
-    filename: 'index.js',
+    filename: 'mousetopos.js',
     path: path.resolve(__dirname, 'build'),
     library: 'MouseToPos',
     libraryTarget: 'umd',
@@ -52,6 +52,13 @@ module.exports = {
         }
       },
       {
+        test: /\.ts$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'ts-loader'
+        }
+      },
+      {
         test: /\.(sa|sc|c)ss$/,
         use: [
           MiniCssExtractPlugin.loader,
@@ -59,6 +66,9 @@ module.exports = {
         ]
       }
     ]
+  },
+  resolve: {
+    extensions: ['.ts', '.js']
   },
   plugins: [
     new MiniCssExtractPlugin({

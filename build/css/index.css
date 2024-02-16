@@ -1,62 +1,12 @@
-/*!**************************************************************************************************!*\
-  !*** css ../../node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!../lib/index.css ***!
-  \**************************************************************************************************/
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html,
-body {
-  height: 100%;
-}
-
-body {
-  background: #f5f5f5;
-
-  & .col-container {
-    display: flex;
-    justify-content: space-evenly;
-
-    & .col {
-      flex: 1;
-      text-align: center;
-      position: relative;
-      border-bottom: 1px solid gray;
-
-      &:before {
-        content: '';
-        display: block;
-        width: 1px;
-        height: 100vh;
-        position: absolute;
-        left: 0;
-        top: 0;
-        background-color: gray;
-      }
-    }
-  }
-
-  & .row-container {
-    & .row {
-      text-align: center;
-      border-bottom: 1px solid gray;
-      display: flex;
-      justify-content: space-evenly;
-
-      & * {
-        flex: 1;
-        padding: 10px 0
-      }
-
-      & .row-label {
-        /* Set it to 1/6th width of parent */
-        flex: calc(1 / 6);
-      }
-    }
-  }
-}
-
-
+/*!
+ * 
+ *   mouse-to-pos v0.0.1
+ *   git remote add origin https://github.com/leoxanigm/MouseToPos.git
+ *
+ *   Copyright (c) Zola (https://zola.dev) and project contributors.
+ *
+ *   This source code is licensed under the MIT license found in the
+ *   LICENSE file in the root directory of this source tree.
+ *
+ */*{box-sizing:border-box;margin:0;padding:0}body,html{height:100%}@keyframes fade-in{0%{opacity:0}to{opacity:1}}body{background:#f5f5f5;& .calendar-header{display:flex;justify-content:space-evenly;& .col{border-bottom:1px solid gray;flex:1;padding:1rem 0;position:relative;text-align:center;&:after{background-image:linear-gradient(180deg,#fff,gray);content:"";display:block;height:100%;position:absolute;right:0;top:0;width:1px}}}& .calendar-body{& .week{border-bottom:1px solid gray;display:flex;& .day{border-right:1px solid gray;cursor:pointer;flex:1;height:100%;padding:1rem 0;position:relative;text-align:center}}}}
 /*# sourceMappingURL=index.css.map*/

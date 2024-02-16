@@ -18,7 +18,8 @@ body {
   }
 }
 
-body {
+/* Week display */
+/* body {
   background: #f5f5f5;
 
   & .calendar-header {
@@ -80,5 +81,54 @@ body {
         z-index: 99;
       }
     }
+  }
+} */
+
+/* Month display */
+body {
+  background: #f5f5f5;
+
+  & .calendar-header {
+    display: flex;
+    justify-content: space-evenly;
+
+    & .col {
+      text-align: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid gray;
+      flex: 1;
+      position: relative;
+
+      &::after {
+        content: '';
+        display: block;
+        width: 1px;
+        height: 100%;
+        position: absolute;
+        right: 0;
+        top: 0;
+        background-image: linear-gradient(to bottom, #fff, gray);
+      }
+    }
+  }
+
+  & .calendar-body {
+    & .week {
+      display: flex;
+      border-bottom: 1px solid gray;
+
+      & .day {
+        text-align: center;
+        padding: 1rem 0;
+        flex: 1;
+        border-right: 1px solid gray;
+        height: 100%;
+        position: relative;
+        cursor: pointer;
+      }
+    }
+    
+
+    
   }
 }

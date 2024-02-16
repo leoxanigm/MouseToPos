@@ -9,15 +9,8 @@ export type eventMap = {
 };
 
 export type subdivision = {
-  rows: number;
-  cols: number;
+  rows?: number;
+  cols?: number;
 };
-
-export type offsets = {
-  top: number;
-  left: number;
-  bottom: number;
-  right: number;
-}
 
 export type outputFunction = (x: number, y: number, event: event) => any | void;

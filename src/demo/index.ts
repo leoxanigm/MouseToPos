@@ -6,20 +6,35 @@ import { getNodes } from '../lib/utils';
 import scaffolding from './scaffolding';
 scaffolding();
 
-// const rows = getNodes('.row-container');
-const container = document.querySelector('.row-container') as HTMLElement;
-// const container = document.body as HTMLElement;
+const container = document.querySelector('.divisions') as HTMLElement;
+const rows = 48;
+const cols = 21;
+const hoverWidth = container.getBoundingClientRect().width / cols;
+const hoverHeight = container.getBoundingClientRect().height / rows;
+const subdivision = { rows: rows, cols: cols };
+const hoverDivs: HTMLElement[] = [];
+
 const options = {
   container,
   events: ['hover', 'click'] as events,
-  subdivision: { rows: 24, cols: 1 },
+  subdivision: subdivision,
   outputFunction: (x: number, y: number, event: event) => {
-    console.log(x, y);
+    // Draw a hover rectangle based on the x and y coordinates, and remove
+    // drawn rectangles if x and y are different from the previous x and y.
+    if (event === 'hover') {
+      hoverDivs.forEach(div => div.remove());
+      hoverDivs.length = 0;
+      const div = document.createElement('div');
+      div.style.position = 'absolute';
+      div.style.top = `${y}px`;
+      div.style.left = `${x}px`;
+      div.style.width = `${hoverWidth}px`;
+      div.style.height = `${hoverHeight}px`;
+      div.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+      container.appendChild(div);
+      hoverDivs.push(div);
+    }
   }
 };
 
-const hoverDivs: HTMLElement[] = [];
 const mouseToPos = new MouseToPos(options);
-mouseToPos.addEventListener('posChange', (e: CustomEvent) => {
-  console.log(e.detail);
-});

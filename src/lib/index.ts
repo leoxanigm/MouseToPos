@@ -6,43 +6,35 @@ import {
   hash,
   unHash
 } from './utils';
-import PosEvent from './events';
-import { eventMap, events, offsets, outputFunction, subdivision } from './@types';
+import { event, eventMap, events, outputFunction, subdivision } from './@types';
 
-class MouseToPos extends PosEvent {
+class MouseToPos {
   #container: HTMLElement;
   #events: events;
   #rows: number;
   #cols: number;
-  #offsetTop: number;
-  #offsetLeft: number;
-  #offsetBottom: number;
-  #offsetRight: number;
   #eventMap: eventMap = {
     hover: 'mousemove',
     click: 'mousedown'
   };
-  #posEvent: PosEvent;
   #outputFunction: outputFunction;
+  #greedy: boolean;
+  #prevX: number;
+  #prevY: number;
 
   constructor(options: {
     container: HTMLElement;
     events: events;
     outputFunction: outputFunction;
     subdivision?: subdivision;
-    offsets?: offsets
+    greedy?: boolean | false;
   }) {
-    super();
     this.#container = options.container;
     this.#events = options.events;
     this.#outputFunction = options.outputFunction;
     this.#rows = options.subdivision?.rows || 1;
     this.#cols = options.subdivision?.cols || 1;
-    this.#offsetTop = options.offsets?.top || 0;
-    this.#offsetLeft = options.offsets?.left || 0;
-    this.#offsetBottom = options.offsets?.bottom || 0;
-    this.#offsetRight = options.offsets?.right || 0;
-    this.#posEvent = new PosEvent();
+    this.#greedy = options.greedy || false;
     this.#init();
   }
 
@@ -56,23 +48,30 @@ class MouseToPos extends PosEvent {
       throw new TypeError('You must provide a container element.');
     }
 
-    this.#events.forEach((event: 'hover' | 'click') => {
+    this.#events.forEach((event: event) => {
       const mouseEvent = this.#eventMap[event];
       this.#container.addEventListener(mouseEvent, (e: MouseEvent) => {
-        this.#eventHandler(e as MouseEvent, this.#container);
+        this.#eventHandler(e as MouseEvent, this.#container, event);
       });
     });
   }
 
-  #eventHandler = (e: MouseEvent, element: HTMLElement) => {
+  #eventHandler = (e: MouseEvent, element: HTMLElement, event: event) => {
     e.stopPropagation();
     const { x, y, width, height } = this.getXY(e, element);
-    this.fire(x, y);
+    if (this.#greedy) {
+      this.#outputFunction(x, y, event);
+    } else if (x !== this.#prevX || y !== this.#prevY) {
+      this.#outputFunction(x, y, event);
+      this.#prevX = x;
+      this.#prevY = y;
+    }
+    return;
   };
 
   getXY = (e: MouseEvent, element: HTMLElement) => {
     const { clientX, clientY } = e;
-    const { top, left, width, height } = element.getBoundingClientRect();
+    let { top, left, width, height } = element.getBoundingClientRect();
 
     const divisionWidth = width / this.#cols;
     const divisionHeight = height / this.#rows;
@@ -87,28 +86,6 @@ class MouseToPos extends PosEvent {
       height: divisionHeight
     };
   };
-
-  // drawRect = (
-  //   {
-  //     x,
-  //     y,
-  //     width,
-  //     height
-  //   }: { x: number; y: number; width: number; height: number },
-  //   parent: HTMLElement
-  // ) => {
-  //   const hoverDiv = document.createElement('div');
-  //   hoverDiv.classList.add('hover-div');
-  //   hoverDiv.style.left = `${x}px`;
-  //   hoverDiv.style.top = `${y}px`;
-  //   hoverDiv.style.width = `${width}px`;
-  //   hoverDiv.style.height = `${height}px`;
-  //   parent.appendChild(hoverDiv);
-  // };
-
-  // posToData = ({ x, y }: { x: number; y: number }) => {
-  //   console.log(x, y);
-  // };
 }
 
 export default MouseToPos;

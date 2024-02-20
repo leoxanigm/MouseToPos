@@ -1,7 +1,7 @@
 import './index.css';
 import { event, eventMap, events, outputFunction, subdivision } from './@types';
 
-class MouseToPos {
+export default class MouseToPos {
   #container: HTMLElement;
   #events: events;
   #rows: number;
@@ -54,7 +54,7 @@ class MouseToPos {
     const { x, y, width, height } = this.getXY(e, element);
     if (this.#greedy) {
       this.#outputFunction(x, y, event);
-    } else if (x !== this.#prevX || y !== this.#prevY) {
+    } else if (x !== this.#prevX || y !== this.#prevY || event === 'click') {
       this.#outputFunction(x, y, event);
       this.#prevX = x;
       this.#prevY = y;
@@ -80,5 +80,3 @@ class MouseToPos {
     };
   };
 }
-
-export default MouseToPos;

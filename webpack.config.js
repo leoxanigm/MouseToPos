@@ -31,8 +31,11 @@ module.exports = {
   output: {
     filename: 'mousetopos.js',
     path: path.resolve(__dirname, 'build'),
-    library: 'MouseToPos',
-    libraryTarget: 'umd',
+    library: {
+      name: 'MouseToPos',
+      type: 'umd',
+      export: 'default'
+    },
     clean: true
   },
   optimization: {
